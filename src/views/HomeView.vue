@@ -1,17 +1,10 @@
 <template>
-  <hello-world />
+  <h1>E-mail app</h1>
+  <EmailsTable />
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-
-// Components
-import HelloWorld from '../components/HelloWorld.vue'
-
-export default defineComponent({
-  name: 'HomeView',
-  components: {
-    HelloWorld,
-  },
-})
+<script lang="ts" setup>
+import EmailsTable from '@/components/EmailsTable.vue'
 </script>
+
+<style></style>
