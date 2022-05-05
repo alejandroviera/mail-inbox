@@ -1,6 +1,13 @@
 <template>
-  <h1>E-mail app</h1>
-  <EmailsTable />
+  <h1>Mail Inbox</h1>
+  <Suspense>
+    <template #fallback>
+      <div>Loading emails...</div>
+    </template>
+    <template #default>
+      <EmailsTable />
+    </template>
+  </Suspense>
 </template>
 
 <script lang="ts" setup>

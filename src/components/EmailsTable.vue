@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import emailData from '@/email-data'
 import { EmailData } from '@/model/EmailData'
 import { computed, reactive } from 'vue'
 import { format } from 'date-fns'
+import axios from 'axios'
 
-const emails = reactive(emailData.emails)
+let response = await axios.get('http://localhost:3000/emails')
+const emails = reactive(response.data)
 
 const sortedEmails = computed(() => {
   return (emails as EmailData[]).sort((e1: EmailData, e2: EmailData) => {
@@ -18,6 +19,7 @@ const unarchivedEmails = computed(() => {
 
 function markRead(email: EmailData) {
   email.read = true
+  axios.put(`http://localhost:3000/emails/${email.id}`, email)
 }
 function archive(email: EmailData) {
   email.archived = true
