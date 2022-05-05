@@ -1,13 +1,26 @@
 <script lang="ts" setup>
 import emailData from '@/email-data'
-import { reactive } from 'vue'
+import { EmailData } from '@/model/EmailData'
+import { computed, reactive } from 'vue'
 import { format } from 'date-fns'
 
 const emails = reactive(emailData.emails)
 
-function markRead(email: any) {
-  debugger
+const sortedEmails = computed(() => {
+  return (emails as EmailData[]).sort((e1: EmailData, e2: EmailData) => {
+    return e1.sentAt < e2.sentAt ? 1 : -1
+  })
+})
+
+const unarchivedEmails = computed(() => {
+  return sortedEmails.value.filter((e) => !e.archived)
+})
+
+function markRead(email: EmailData) {
   email.read = true
+}
+function archive(email: EmailData) {
+  email.archived = true
 }
 </script>
 
@@ -20,10 +33,11 @@ function markRead(email: any) {
         <th style="width: 30%">Subject</th>
         <th>Body</th>
         <th style="width: 150px">Date</th>
+        <th></th>
       </tr>
     </thead>
     <tr
-      v-for="email of emails"
+      v-for="email of unarchivedEmails"
       :key="email.id"
       :class="['clickable', email.read ? 'read' : '']"
       @click="markRead(email)"
@@ -41,6 +55,9 @@ function markRead(email: any) {
         <div class="content">{{ email.body }}</div>
       </td>
       <td>{{ format(new Date(email.sentAt), 'MMM do yyyy') }}</td>
+      <td>
+        <v-btn @click="archive(email)">Archive</v-btn>
+      </td>
     </tr>
   </v-table>
 </template>
