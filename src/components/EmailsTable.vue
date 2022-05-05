@@ -1,11 +1,14 @@
 <script lang="ts" setup>
 import { EmailData } from '@/model/EmailData'
-import { computed, reactive } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { format } from 'date-fns'
 import axios from 'axios'
+import MailView from './MailView.vue'
+import ModalView from './ModalView.vue'
 
 let response = await axios.get('http://localhost:3000/emails')
 const emails = reactive(response.data)
+const openedEmail = ref<null | EmailData>(null)
 
 const sortedEmails = computed(() => {
   return (emails as EmailData[]).sort((e1: EmailData, e2: EmailData) => {
@@ -17,7 +20,8 @@ const unarchivedEmails = computed(() => {
   return sortedEmails.value.filter((e) => !e.archived)
 })
 
-function markRead(email: EmailData) {
+function openEmail(email: EmailData) {
+  openedEmail.value = email
   email.read = true
   axios.put(`http://localhost:3000/emails/${email.id}`, email)
 }
@@ -42,7 +46,7 @@ function archive(email: EmailData) {
       v-for="email of unarchivedEmails"
       :key="email.id"
       :class="['clickable', email.read ? 'read' : '']"
-      @click="markRead(email)"
+      @click="openEmail(email)"
     >
       <td>
         <div>
@@ -62,6 +66,9 @@ function archive(email: EmailData) {
       </td>
     </tr>
   </v-table>
+  <ModalView v-if="openedEmail" @closeModal="openedEmail = null">
+    <MailView :email="openedEmail" />
+  </ModalView>
 </template>
 <style scoped>
 /* Mail Table */
