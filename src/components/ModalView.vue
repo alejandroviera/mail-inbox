@@ -1,18 +1,9 @@
 <script lang="ts" setup>
-import { defineEmits, onBeforeUnmount } from 'vue'
+import { defineEmits } from 'vue'
+import useKeydown from '@/composables/useKeydown'
 const emit = defineEmits(['closeModal'])
 
-window.addEventListener('keydown', onKeydown)
-
-function onKeydown(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
-    emit('closeModal')
-  }
-}
-
-onBeforeUnmount(() => {
-  window.removeEventListener('keydown', onKeydown)
-})
+useKeydown([{ keyPressed: 'Escape', fn: () => emit('closeModal') }])
 </script>
 <template>
   <div class="modal">
