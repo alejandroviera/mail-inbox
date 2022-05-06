@@ -9,7 +9,6 @@ import ModalView from './ModalView.vue'
 let response = await axios.get('http://localhost:3000/emails')
 const emails = reactive(response.data)
 const openedEmail = ref<null | EmailData>(null)
-
 const sortedEmails = computed(() => {
   return (emails as EmailData[]).sort((e1: EmailData, e2: EmailData) => {
     return e1.sentAt < e2.sentAt ? 1 : -1
@@ -19,6 +18,18 @@ const sortedEmails = computed(() => {
 const unarchivedEmails = computed(() => {
   return sortedEmails.value.filter((e) => !e.archived)
 })
+
+const emailSelection = {
+  emails: reactive(new Set()),
+  toggle(email: EmailData) {
+    debugger
+    if (this.emails.has(email)) {
+      this.emails.delete(email)
+    } else {
+      this.emails.add(email)
+    }
+  },
+}
 
 function openEmail(email: EmailData) {
   openedEmail.value = email
@@ -67,6 +78,7 @@ function changeEmail(args: { changeIndex: number }) {
 </script>
 
 <template>
+  {{ emailSelection.emails.size }} emails selected
   <v-table class="mail-table">
     <thead>
       <tr>
@@ -82,18 +94,21 @@ function changeEmail(args: { changeIndex: number }) {
       v-for="email of unarchivedEmails"
       :key="email.id"
       :class="['clickable', email.read ? 'read' : '']"
-      @click="openEmail(email)"
     >
       <td>
         <div>
-          <v-checkbox style="grid-template-rows: auto 0"></v-checkbox>
+          <v-checkbox
+            style="grid-template-rows: auto 0"
+            @click="emailSelection.toggle(email)"
+            :selected="emailSelection.emails.has(email)"
+          ></v-checkbox>
         </div>
       </td>
-      <td>{{ email.from }}</td>
-      <td class="subject">
+      <td @click="openEmail(email)">{{ email.from }}</td>
+      <td class="subject" @click="openEmail(email)">
         <div class="content">{{ email.subject }}</div>
       </td>
-      <td>
+      <td @click="openEmail(email)">
         <div class="content">{{ email.body }}</div>
       </td>
       <td>{{ format(new Date(email.sentAt), 'MMM do yyyy') }}</td>
