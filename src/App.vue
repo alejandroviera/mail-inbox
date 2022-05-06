@@ -70,48 +70,4 @@ input[type='checkbox']:checked {
 .mb-0 {
   margin-bottom: 0;
 }
-/* Modal */
-.modal,
-.overlay {
-  width: 100%;
-  height: 100%;
-  position: fixed;
-  left: 0;
-  top: 0;
-}
-.overlay {
-  opacity: 0.5;
-  background-color: black;
-}
-.modal-card {
-  position: relative;
-  max-width: 80%;
-  margin: auto;
-  margin-top: 30px;
-  padding: 20px;
-  background-color: white;
-  min-height: 500px;
-  z-index: 10;
-  opacity: 1;
-}
-/* Email Modal */
-.email-display {
-  text-align: left;
-}
-
-/* Bulk Action Bar */
-.bulk-action-bar {
-  width: 100%;
-  max-width: 1000px;
-  margin: auto;
-  text-align: left;
-  padding-bottom: 8px;
-}
-.bulk-action-bar input {
-  margin: 5px;
-}
-.bulk-action-bar .checkbox {
-  margin-right: 6px;
-  margin-left: 3px;
-}
 </style>

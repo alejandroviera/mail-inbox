@@ -6,6 +6,7 @@ import axios from 'axios'
 import MailView from './MailView.vue'
 import ModalView from './ModalView.vue'
 import useEmailSelection from '@/composables/useEmailSelection'
+import BulkActionBar from './BulkActionBar.vue'
 
 let response = await axios.get('http://localhost:3000/emails')
 const emails = reactive(response.data)
@@ -66,10 +67,15 @@ function changeEmail(args: { changeIndex: number }) {
     }
   }
 }
+
+function isSelected(email: EmailData) {
+  debugger
+  return emailSelection.emails.has(email)
+}
 </script>
 
 <template>
-  {{ emailSelection.emails.size }} emails selected
+  <BulkActionBar :emails="unarchivedEmails" />
   <v-table class="mail-table">
     <thead>
       <tr>
@@ -91,7 +97,7 @@ function changeEmail(args: { changeIndex: number }) {
           <v-checkbox
             style="grid-template-rows: auto 0"
             @click="emailSelection.toggle(email)"
-            :selected="emailSelection.emails.has(email)"
+            :model-value="isSelected(email)"
           ></v-checkbox>
         </div>
       </td>
