@@ -23,10 +23,46 @@ const unarchivedEmails = computed(() => {
 function openEmail(email: EmailData) {
   openedEmail.value = email
   email.read = true
+  updateEmail(email)
+}
+
+function updateEmail(email: EmailData) {
   axios.put(`http://localhost:3000/emails/${email.id}`, email)
 }
+
 function archive(email: EmailData) {
   email.archived = true
+}
+
+function toggleArchive() {
+  let email = openedEmail.value
+  if (email != null) {
+    email.archived = !email.archived
+    updateEmail(email)
+
+    if (email.archived) {
+      openedEmail.value = null
+    }
+  }
+}
+
+function toggleRead() {
+  let email = openedEmail.value
+  if (email != null) {
+    email.read = !email.read
+    updateEmail(email)
+  }
+}
+
+function changeEmail(args: { changeIndex: number }) {
+  if (openedEmail.value) {
+    const currentIndex = unarchivedEmails.value.indexOf(openedEmail.value)
+    if (currentIndex >= 0 && currentIndex < unarchivedEmails.value.length) {
+      openEmail(unarchivedEmails.value[currentIndex + args.changeIndex])
+    } else {
+      openedEmail.value = null
+    }
+  }
 }
 </script>
 
@@ -67,7 +103,12 @@ function archive(email: EmailData) {
     </tr>
   </v-table>
   <ModalView v-if="openedEmail" @closeModal="openedEmail = null">
-    <MailView :email="openedEmail" />
+    <MailView
+      :email="openedEmail"
+      @changeEmail="changeEmail"
+      @toggle-archive="toggleArchive"
+      @toggle-read="toggleRead"
+    />
   </ModalView>
 </template>
 <style scoped>
