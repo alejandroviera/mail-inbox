@@ -5,6 +5,7 @@ import { format } from 'date-fns'
 import axios from 'axios'
 import MailView from './MailView.vue'
 import ModalView from './ModalView.vue'
+import useEmailSelection from '@/composables/useEmailSelection'
 
 let response = await axios.get('http://localhost:3000/emails')
 const emails = reactive(response.data)
@@ -19,17 +20,7 @@ const unarchivedEmails = computed(() => {
   return sortedEmails.value.filter((e) => !e.archived)
 })
 
-const emailSelection = {
-  emails: reactive(new Set()),
-  toggle(email: EmailData) {
-    debugger
-    if (this.emails.has(email)) {
-      this.emails.delete(email)
-    } else {
-      this.emails.add(email)
-    }
-  },
-}
+const emailSelection = useEmailSelection()
 
 function openEmail(email: EmailData) {
   openedEmail.value = email
