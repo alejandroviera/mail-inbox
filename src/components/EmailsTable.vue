@@ -69,7 +69,6 @@ function changeEmail(args: { changeIndex: number }) {
 }
 
 function isSelected(email: EmailData) {
-  debugger
   return emailSelection.emails.has(email)
 }
 </script>

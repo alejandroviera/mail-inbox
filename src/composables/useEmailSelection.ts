@@ -1,7 +1,8 @@
 import { reactive } from 'vue'
 import { EmailData } from '@/model/EmailData'
+import axios from 'axios'
 
-const emails = reactive(new Set())
+const emails = reactive(new Set<EmailData>())
 
 export default function emailSelection() {
   const toggle = function (email: EmailData) {
@@ -20,5 +21,20 @@ export default function emailSelection() {
     emailsToAdd.forEach((email) => emails.add(email))
   }
 
-  return { emails, toggle, clear, addMultiple }
+  const bulkOperation = function (fn: (email: EmailData) => void) {
+    emails.forEach((email) => {
+      fn(email)
+      axios.put(`http://localhost:3000/emails/${email.id}`, email)
+    })
+  }
+
+  const markRead = () => bulkOperation((email) => (email.read = true))
+  const markUnread = () => bulkOperation((email) => (email.read = false))
+  const archive = () =>
+    bulkOperation((email) => {
+      email.archived = true
+      clear()
+    })
+
+  return { emails, toggle, clear, addMultiple, markRead, markUnread, archive }
 }

@@ -17,7 +17,6 @@ const someEmailsSelected = computed(
 )
 
 function selectAll() {
-  debugger
   if (allEmailsSelected.value) {
     emailSelection.clear()
   } else {
@@ -26,14 +25,38 @@ function selectAll() {
 }
 </script>
 <template>
-  <div class="bulk-action-bar">
-    {{ emailSelection.emails.size }} emails selected
-    <v-checkbox
-      :indeterminate="someEmailsSelected"
-      v-model="allEmailsSelected"
-      @click="selectAll"
-    ></v-checkbox>
-  </div>
+  <v-toolbar class="bulk-action-bar">
+    <v-toolbar-items>
+      <v-checkbox
+        style="grid-template-rows: auto 0; flex: 0 1 auto"
+        :indeterminate="someEmailsSelected"
+        v-model="allEmailsSelected"
+        label="."
+        @click="selectAll"
+      >
+      </v-checkbox>
+      <v-btn
+        variant="outlined"
+        @click="emailSelection.markRead()"
+        :disabled="[...emailSelection.emails].every((e) => e.read)"
+        ><v-icon>mdi-email-open</v-icon>Mark Read</v-btn
+      >
+      <v-btn
+        variant="outlined"
+        @click="emailSelection.markUnread()"
+        :disabled="[...emailSelection.emails].every((e) => !e.read)"
+        ><v-icon>mdi-email</v-icon>Mark Unread</v-btn
+      >
+      <v-btn
+        variant="outlined"
+        @click="emailSelection.archive()"
+        :disabled="numberSelected === 0"
+        ><v-icon>mdi-package-down</v-icon>Archive</v-btn
+      >
+    </v-toolbar-items>
+    <v-spacer></v-spacer>
+    <div>{{ emailSelection.emails.size }} emails selected</div>
+  </v-toolbar>
 </template>
 <style scoped>
 .partial-check input {
@@ -46,7 +69,7 @@ function selectAll() {
   max-width: 1400px;
   margin: auto;
   text-align: left;
-  padding-bottom: 8px;
+  padding-inline-start: 0px;
 }
 .bulk-action-bar input {
   margin: 5px;
