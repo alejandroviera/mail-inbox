@@ -17,11 +17,13 @@ const sortedEmails = computed(() => {
   })
 })
 
-const unarchivedEmails = computed(() => {
-  return sortedEmails.value.filter((e) => !e.archived)
+const filteredEmails = computed(() => {
+  const getArchived = selectedScreen.value !== 'inbox'
+  return sortedEmails.value.filter((e) => e.archived === getArchived)
 })
 
 const emailSelection = useEmailSelection()
+const selectedScreen = ref('inbox')
 
 function openEmail(email: EmailData) {
   openedEmail.value = email
@@ -59,9 +61,9 @@ function toggleRead() {
 
 function changeEmail(args: { changeIndex: number }) {
   if (openedEmail.value) {
-    const currentIndex = unarchivedEmails.value.indexOf(openedEmail.value)
-    if (currentIndex >= 0 && currentIndex < unarchivedEmails.value.length) {
-      openEmail(unarchivedEmails.value[currentIndex + args.changeIndex])
+    const currentIndex = filteredEmails.value.indexOf(openedEmail.value)
+    if (currentIndex >= 0 && currentIndex < filteredEmails.value.length) {
+      openEmail(filteredEmails.value[currentIndex + args.changeIndex])
     } else {
       openedEmail.value = null
     }
@@ -71,10 +73,23 @@ function changeEmail(args: { changeIndex: number }) {
 function isSelected(email: EmailData) {
   return emailSelection.emails.has(email)
 }
+
+function selectScreen(screenName: string) {
+  selectedScreen.value = screenName
+  emailSelection.clear()
+}
 </script>
 
 <template>
-  <BulkActionBar :emails="unarchivedEmails" />
+  <v-btn @click="selectScreen('inbox')" :disabled="selectedScreen === 'inbox'"
+    >Inbox</v-btn
+  >
+  <v-btn
+    @click="selectScreen('archived')"
+    :disabled="selectedScreen === 'archived'"
+    >Archived</v-btn
+  >
+  <BulkActionBar :emails="filteredEmails" />
   <v-table class="mail-table">
     <thead>
       <tr>
@@ -87,7 +102,7 @@ function isSelected(email: EmailData) {
       </tr>
     </thead>
     <tr
-      v-for="email of unarchivedEmails"
+      v-for="email of filteredEmails"
       :key="email.id"
       :class="['clickable', email.read ? 'read' : '']"
     >

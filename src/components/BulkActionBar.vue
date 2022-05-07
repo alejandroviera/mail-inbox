@@ -10,10 +10,12 @@ export interface BulkActionProps {
 const props = defineProps<BulkActionProps>()
 const emailSelection = useEmailSelection()
 const numberSelected = computed(() => emailSelection.emails.size)
-const totalEmails = toRefs(props).emails.value.length
-const allEmailsSelected = computed(() => numberSelected.value === totalEmails)
+const totalEmails = computed(() => toRefs(props).emails.value.length)
+const allEmailsSelected = computed(
+  () => numberSelected.value === totalEmails.value
+)
 const someEmailsSelected = computed(
-  () => numberSelected.value > 0 && numberSelected.value < totalEmails
+  () => numberSelected.value > 0 && numberSelected.value < totalEmails.value
 )
 
 function selectAll() {
